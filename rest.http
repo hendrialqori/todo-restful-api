@@ -1,0 +1,30 @@
+### GET all roles
+GET http://localhost:3000/api/roles
+Accept: application/json
+
+### GET roles by id
+GET http://localhost:3000/api/roles/1
+Accept: application/json
+
+### POST new roles
+POST http://localhost:3000/api/roles
+Accept: application/json
+Content-Type: application/json
+
+{
+    "name" : "JOKOWI 3"
+}
+
+### UPDATE role by id
+PUT http://localhost:3000/api/roles/22
+Accept: application/json
+Content-Type: application/json
+
+{
+    "name" : "RUSDI NJIR!"
+}
+
+### DELETE role by id
+DELETE  http://localhost:3000/api/roles/19
+Accept: application/json
+Content-Type: application/json
