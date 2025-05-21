@@ -16,7 +16,7 @@ func NewRoleRepository(DB *sql.DB) RoleRepository {
 }
 
 func (repository *RoleRepositoryImpl) Create(role domain.Role) domain.Role {
-	query := "INSERT INTO roles(name) VALUES(?)"
+	query := `insert into roles(name) values(?)`
 	result, err := repository.DB.Exec(query, role.Name)
 
 	if err != nil {
@@ -36,31 +36,24 @@ func (repository *RoleRepositoryImpl) Create(role domain.Role) domain.Role {
 
 // Update implements RoleRepository.
 func (repository *RoleRepositoryImpl) Update(role domain.Role) domain.Role {
-	_, err := repository.DB.Exec("UPDATE roles SET name = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?",
-		role.Name,
-		role.Id)
-
-	if err != nil {
+	query := `update roles set name = (?), updated_at = current_timestamp where id = (?)`
+	if _, err := repository.DB.Exec(query, role.Name, role.Id); err != nil {
 		panic(err)
 	}
-
 	return role
 }
 
 // Delete implements RoleRepository.
 func (repository *RoleRepositoryImpl) Delete(roleId int) {
-	query := "DELETE FROM roles WHERE id = (?)"
-	_, err := repository.DB.Exec(query, roleId)
-
-	if err != nil {
+	query := `delete from roles where id = (?)`
+	if _, err := repository.DB.Exec(query, roleId); err != nil {
 		panic(err)
 	}
-
 }
 
 // FindById implements RoleRepository.
 func (repository *RoleRepositoryImpl) FindById(roleId int) (domain.Role, error) {
-	query := "SELECT * FROM roles WHERE id = (?) LIMIT 1"
+	query := `select * from roles where id = (?) limit 1`
 	row := repository.DB.QueryRow(query, roleId)
 
 	var role domain.Role
@@ -70,12 +63,11 @@ func (repository *RoleRepositoryImpl) FindById(roleId int) (domain.Role, error) 
 	}
 
 	return role, nil
-
 }
 
 // FindAll implements RoleRepository.
 func (repository *RoleRepositoryImpl) FindAll() []domain.Role {
-	query := "SELECT * FROM roles"
+	query := `select * from roles`
 	rows, err := repository.DB.Query(query)
 
 	if err != nil {
@@ -92,10 +84,8 @@ func (repository *RoleRepositoryImpl) FindAll() []domain.Role {
 		if err := rows.Scan(&role.Id, &role.Name, &role.CreatedAt, &role.UpdatedAt); err != nil {
 			panic(err)
 		}
-
 		roles = append(roles, role)
 	}
 
 	return roles
-
 }
