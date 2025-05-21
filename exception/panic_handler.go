@@ -12,6 +12,8 @@ import (
 )
 
 func PanicHandler(w http.ResponseWriter, r *http.Request, err any) {
+	fmt.Println(err)
+
 	if sqlError(w, err) {
 	}
 
