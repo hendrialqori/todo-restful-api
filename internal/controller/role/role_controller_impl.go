@@ -20,8 +20,7 @@ func (controller *RoleControllerImpl) Create(write http.ResponseWriter, request 
 	var roleRequest web.RoleCreateRequest
 
 	// parse request body with json NewDecoder method and assign to roleRequest struct
-	err := json.NewDecoder(request.Body).Decode(&roleRequest)
-	if err != nil {
+	if err := json.NewDecoder(request.Body).Decode(&roleRequest); err != nil {
 		panic(err)
 	}
 
@@ -41,11 +40,9 @@ func (controller *RoleControllerImpl) Create(write http.ResponseWriter, request 
 
 	// create encoder to encode apiResponse variable, then return into http response
 	encode := json.NewEncoder(write)
-	err = encode.Encode(apiResponse)
-	if err != nil {
+	if err := encode.Encode(apiResponse); err != nil {
 		panic(err)
 	}
-
 }
 
 // Update implements RoleController.
@@ -82,8 +79,7 @@ func (controller *RoleControllerImpl) Update(write http.ResponseWriter, request 
 
 	// create encoder to encode apiResponse variable, then return into http response
 	encode := json.NewEncoder(write)
-	err = encode.Encode(apiResponse)
-	if err != nil {
+	if err = encode.Encode(apiResponse); err != nil {
 		panic(err)
 	}
 }
@@ -146,10 +142,10 @@ func (controller *RoleControllerImpl) FindAll(write http.ResponseWriter, request
 
 	write.Header().Add("Content-Type", "application/json")
 	encode := json.NewEncoder(write)
-	err := encode.Encode(apiResponse)
-	if err != nil {
+	if err := encode.Encode(apiResponse); err != nil {
 		panic(err)
 	}
+
 }
 
 func NewRoleController(RoleService service.RoleService) RoleController {
