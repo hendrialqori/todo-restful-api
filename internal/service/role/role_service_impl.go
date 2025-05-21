@@ -18,8 +18,7 @@ type RoleServiceImpl struct {
 func (service *RoleServiceImpl) Create(request web.RoleCreateRequest) web.RoleResponse {
 	var roleCreateRequest domain.Role
 
-	err := service.Validate.Struct(request)
-	if err != nil {
+	if err := service.Validate.Struct(request); err != nil {
 		panic(err)
 	}
 
@@ -83,8 +82,7 @@ func (service *RoleServiceImpl) FindById(roleId int) web.RoleResponse {
 
 // Update implements RoleService.
 func (service *RoleServiceImpl) Update(request web.RoleUpdateRequest) web.RoleResponse {
-	err := service.Validate.Struct(request)
-	if err != nil {
+	if err := service.Validate.Struct(request); err != nil {
 		panic(err)
 	}
 
