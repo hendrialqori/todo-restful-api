@@ -11,34 +11,46 @@ import (
 	"github.com/go-sql-driver/mysql"
 )
 
+type ErrorHandler func(w http.ResponseWriter, err any) bool
+
+var errorsType = []ErrorHandler{
+	sqlError,
+	validationError,
+	notFoundError,
+}
+
 func PanicHandler(w http.ResponseWriter, r *http.Request, err any) {
 	fmt.Println(err)
 
-	if sqlError(w, err) {
+	for _, handler := range errorsType {
+		if errorHandler := handler(w, err); errorHandler {
+			return
+		}
 	}
 
-	if validationError(w, err) {
+	// Fallback unknown error
+	writeError(w, http.StatusInternalServerError, "Internal server error", "Something went wrong")
+}
+
+func writeError(w http.ResponseWriter, status int, reason string, message string) {
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Add("X-Status-Reason", reason)
+	w.WriteHeader(status)
+
+	errResponse := web.ApiResponse{
+		Ok:      false,
+		Code:    status,
+		Message: message,
 	}
 
-	if notFoundError(w, err) {
+	if err := json.NewEncoder(w).Encode(errResponse); err != nil {
+		panic(err)
 	}
 }
 
 func sqlError(w http.ResponseWriter, err any) bool {
 	if sqlError, ok := err.(*mysql.MySQLError); ok {
-
-		w.Header().Add("X-Status-Reason", "Entity failed")
-		w.WriteHeader(http.StatusInternalServerError)
-
-		errResponse := web.ApiResponse{
-			Ok:      false,
-			Code:    http.StatusInternalServerError,
-			Message: sqlError.Message,
-		}
-
-		if err := json.NewEncoder(w).Encode(errResponse); err != nil {
-			panic(err)
-		}
+		writeError(w, http.StatusInternalServerError, "Entity error", sqlError.Message)
 		return true
 	} else {
 		return false
@@ -47,48 +59,21 @@ func sqlError(w http.ResponseWriter, err any) bool {
 
 func validationError(w http.ResponseWriter, err any) bool {
 	if validatorError, ok := err.(validator.ValidationErrors); ok {
-
-		w.Header().Add("X-Status-Reason", "Validation failed")
-		w.WriteHeader(http.StatusUnprocessableEntity)
-
 		errMessages := make([]string, 0)
 		for _, fieldErr := range validatorError {
 			msg := fmt.Sprintf("Field '%s' failed on '%s' validation", fieldErr.Field(), fieldErr.Tag())
 			errMessages = append(errMessages, msg)
 		}
-
-		errResponse := web.ApiResponse{
-			Ok:      false,
-			Code:    http.StatusUnprocessableEntity,
-			Message: strings.Join(errMessages, ", "),
-		}
-
-		if err := json.NewEncoder(w).Encode(errResponse); err != nil {
-			panic(err)
-		}
+		writeError(w, http.StatusUnprocessableEntity, "Validation error", strings.Join(errMessages, ", "))
 		return true
-
 	} else {
 		return false
 	}
 }
 
 func notFoundError(w http.ResponseWriter, err any) bool {
-	if _, ok := err.(NotFoundError); ok {
-
-		w.Header().Add("X-Status-Reason", "Data not found")
-		w.WriteHeader(http.StatusNotFound)
-
-		errResponse := web.ApiResponse{
-			Ok:      false,
-			Code:    http.StatusNotFound,
-			Message: "Not found error",
-		}
-
-		if err := json.NewEncoder(w).Encode(errResponse); err != nil {
-			panic(err)
-		}
-
+	if notFoundError, ok := err.(NotFoundError); ok {
+		writeError(w, http.StatusNotFound, "Not found error", notFoundError.Error)
 		return true
 	} else {
 		return false
