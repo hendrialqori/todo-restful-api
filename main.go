@@ -19,6 +19,7 @@ func main() {
 
 	route.RoleRouter(router, DB, validate)
 	route.UserRouter(router, DB, validate)
+	route.TodoRouter(router, DB, validate)
 
 	router.PanicHandler = exception.PanicHandler
 
