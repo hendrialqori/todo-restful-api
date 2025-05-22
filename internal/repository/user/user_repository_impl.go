@@ -3,7 +3,6 @@ package repository
 import (
 	"database/sql"
 	"encoding/json"
-	"fmt"
 	"todo-restful-api/internal/model/domain"
 )
 
@@ -106,7 +105,6 @@ func (repository *UserRepositoryImpl) Update(user domain.User) domain.User {
 		update users set email = (?), username = (?), updated_at = current_timestamp where id = (?)
 	`
 	if _, err := repository.DB.Exec(query, user.Email, user.UserName, user.Id); err != nil {
-		fmt.Println("Error here!")
 		panic(err)
 	}
 
