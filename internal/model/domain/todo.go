@@ -2,9 +2,10 @@ package domain
 
 type Todo struct {
 	Id        int
-	Title     int
+	Title     string
 	Status    string
 	UserId    int
+	User      User
 	CreatedAt string
 	UpdatedAt string
 }
