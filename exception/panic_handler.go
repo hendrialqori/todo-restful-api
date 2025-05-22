@@ -11,9 +11,9 @@ import (
 	"github.com/go-sql-driver/mysql"
 )
 
-type ErrorHandler func(w http.ResponseWriter, err any) bool
+type ErrorHandlerFunc func(w http.ResponseWriter, err any) bool
 
-var errorsType = []ErrorHandler{
+var allErrors = []ErrorHandlerFunc{
 	sqlError,
 	validationError,
 	notFoundError,
@@ -22,7 +22,7 @@ var errorsType = []ErrorHandler{
 func PanicHandler(w http.ResponseWriter, r *http.Request, err any) {
 	fmt.Println(err)
 
-	for _, handler := range errorsType {
+	for _, handler := range allErrors {
 		if errorHandler := handler(w, err); errorHandler {
 			return
 		}
