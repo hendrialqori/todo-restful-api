@@ -1,0 +1,177 @@
+basePath: /api
+definitions:
+  web.ApiResponse:
+    properties:
+      code:
+        example: 200
+        type: integer
+      data: {}
+      message:
+        example: success
+        type: string
+      ok:
+        example: true
+        type: boolean
+    type: object
+  web.NotFoundResponse:
+    properties:
+      code:
+        example: 404
+        type: integer
+      message:
+        example: not_found_error
+        type: string
+      ok:
+        example: false
+        type: boolean
+    type: object
+  web.RoleCreateRequest:
+    properties:
+      name:
+        example: SUPERADMIN
+        maxLength: 50
+        minLength: 0
+        type: string
+    required:
+    - name
+    type: object
+  web.RoleUpdateRequest:
+    properties:
+      id:
+        type: integer
+      name:
+        example: ADMIN
+        maxLength: 50
+        minLength: 0
+        type: string
+    required:
+    - id
+    - name
+    type: object
+host: localhost:3000
+info:
+  contact: {}
+  description: This is a sample todo api (CRUD).
+  title: Todo Restful API
+  version: "1.0"
+paths:
+  /roles:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve all existing roles
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/web.ApiResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/web.NotFoundResponse'
+      summary: Get roles
+      tags:
+      - Roles
+  /roles/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete existing roles base on id
+      parameters:
+      - description: Role Id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/web.ApiResponse'
+      summary: Delete roles base on id
+      tags:
+      - Roles
+    get:
+      consumes:
+      - application/json
+      description: Retrieve existing roles base on id
+      parameters:
+      - description: Role Id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/web.ApiResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/web.NotFoundResponse'
+      summary: Get roles base on id
+      tags:
+      - Roles
+    post:
+      consumes:
+      - application/json
+      description: Create new role
+      parameters:
+      - description: Role name must be capitalize
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/web.RoleCreateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/web.ApiResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/web.NotFoundResponse'
+      summary: Create roles
+      tags:
+      - Roles
+    put:
+      consumes:
+      - application/json
+      description: Update existing roles base on id
+      parameters:
+      - description: Role Id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Data role yang akan diupdate (tanpa ID)
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/web.RoleUpdateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/web.ApiResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/web.NotFoundResponse'
+      summary: Update roles base on id
+      tags:
+      - Roles
+swagger: "2.0"

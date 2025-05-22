@@ -8,7 +8,17 @@ import (
 
 	"github.com/go-playground/validator/v10"
 	"github.com/julienschmidt/httprouter"
+
+	_ "todo-restful-api/docs"
+
+	httpSwagger "github.com/swaggo/http-swagger"
 )
+
+//	@title			Todo Restful API
+//	@version		1.0
+//	@description	This is a sample todo api (CRUD).
+//	@host			localhost:3000
+//	@BasePath		/api
 
 func main() {
 	var (
@@ -16,6 +26,9 @@ func main() {
 		DB       = app.NewDB()
 		validate = validator.New()
 	)
+
+	// Swagger documentation route
+	router.Handler(http.MethodGet, "/swagger/*any", httpSwagger.WrapHandler)
 
 	route.RoleRouter(router, DB, validate)
 	route.UserRouter(router, DB, validate)
