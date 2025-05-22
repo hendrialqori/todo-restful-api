@@ -14,7 +14,17 @@ type RoleControllerImpl struct {
 	RoleService service.RoleService
 }
 
-// Create implements RoleController.
+// CreateRoles godoc
+//
+//	@Summary		Create roles
+//	@Description	Create new role
+//	@Tags			Roles
+//	@Param			body	body	web.RoleCreateRequest	true "Role name must be capitalize"
+//	@Accept			json
+//	@Produce		json
+//	@Success		200	{object}	web.ApiResponse{}
+//	@Failure		404	{object}	web.NotFoundResponse{}
+//	@Router			/roles/{id} [post]
 func (controller *RoleControllerImpl) Create(write http.ResponseWriter, request *http.Request, params httprouter.Params) {
 	// initiate struct role request
 	var roleRequest web.RoleCreateRequest
@@ -45,7 +55,18 @@ func (controller *RoleControllerImpl) Create(write http.ResponseWriter, request 
 	}
 }
 
-// Update implements RoleController.
+// UpdatedRoles godoc
+//
+//	@Summary		Update roles base on id
+//	@Description	Update existing roles base on id
+//	@Tags			Roles
+//	@Param			id		path	int						true	"Role Id"
+//	@Param			body	body	web.RoleUpdateRequest	true	"Data role yang akan diupdate (tanpa ID)"
+//	@Accept			json
+//	@Produce		json
+//	@Success		200	{object}	web.ApiResponse{}
+//	@Failure		404	{object}	web.NotFoundResponse{}
+//	@Router			/roles/{id} [put]
 func (controller *RoleControllerImpl) Update(write http.ResponseWriter, request *http.Request, params httprouter.Params) {
 	roleId := params.ByName("roleId")
 	id, err := strconv.Atoi(roleId)
@@ -55,13 +76,14 @@ func (controller *RoleControllerImpl) Update(write http.ResponseWriter, request 
 
 	// initiate struct role request
 	var roleRequest web.RoleUpdateRequest
-	roleRequest.Id = id
 
 	// parse request body with json NewDecoder method and assign to roleRequest struct
 	err = json.NewDecoder(request.Body).Decode(&roleRequest)
 	if err != nil {
 		panic(err)
 	}
+
+	roleRequest.Id = id
 
 	// passing roleRequest into role service method
 	roleResponse := controller.RoleService.Update(roleRequest)
@@ -84,7 +106,16 @@ func (controller *RoleControllerImpl) Update(write http.ResponseWriter, request 
 	}
 }
 
-// Delete implements RoleController.
+// DeleteRolesById godoc
+//
+//	@Summary		Delete roles base on id
+//	@Description	Delete existing roles base on id
+//	@Tags			Roles
+//	@Param			id	path	int	true	"Role Id"
+//	@Accept			json
+//	@Produce		json
+//	@Success		200	{object}	web.ApiResponse{}
+//	@Router			/roles/{id} [delete]
 func (controller *RoleControllerImpl) Delete(write http.ResponseWriter, request *http.Request, params httprouter.Params) {
 	roleId := params.ByName("roleId")
 	id, err := strconv.Atoi(roleId)
@@ -107,7 +138,17 @@ func (controller *RoleControllerImpl) Delete(write http.ResponseWriter, request 
 	}
 }
 
-// FindById implements RoleController.
+// GetRolesById godoc
+//
+//	@Summary		Get roles base on id
+//	@Description	Retrieve existing roles base on id
+//	@Tags			Roles
+//	@Param			id	path	int	true	"Role Id"
+//	@Accept			json
+//	@Produce		json
+//	@Success		200	{object}	web.ApiResponse{}
+//	@Failure		404	{object}	web.NotFoundResponse{}
+//	@Router			/roles/{id} [get]
 func (controller *RoleControllerImpl) FindById(write http.ResponseWriter, request *http.Request, params httprouter.Params) {
 	roleId := params.ByName("roleId")
 	id, err := strconv.Atoi(roleId)
@@ -127,10 +168,18 @@ func (controller *RoleControllerImpl) FindById(write http.ResponseWriter, reques
 	if err := json.NewEncoder(write).Encode(apiResponse); err != nil {
 		panic(err)
 	}
-
 }
 
-// FindAll implements RoleController.
+// ListRoles godoc
+//
+//	@Summary		Get roles
+//	@Description	Retrieve all existing roles
+//	@Tags			Roles
+//	@Accept			json
+//	@Produce		json
+//	@Success		200	{object}	web.ApiResponse{}
+//	@Failure		404	{object}	web.NotFoundResponse{}
+//	@Router			/roles [get]
 func (controller *RoleControllerImpl) FindAll(write http.ResponseWriter, request *http.Request, params httprouter.Params) {
 	rolesResponse := controller.RoleService.FindAll()
 	apiResponse := web.ApiResponse{
