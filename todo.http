@@ -1,0 +1,27 @@
+### GET all user
+GET http://localhost:3000/api/todos/2
+Accept: application/json
+
+### POST new user
+POST http://localhost:3000/api/todos
+Accept: application/json
+Content-Type: application/json
+
+{
+    "title": "create api users 2",
+    "user_id": 2
+}
+
+### POST new user
+PUT http://localhost:3000/api/todos/4
+Accept: application/json
+Content-Type: application/json
+
+{
+    "title": "Hendri Edit",
+    "status": "DONE"
+}
+
+### GET todos by id
+DELETE http://localhost:3000/api/todos/3
+Accept: application/json
