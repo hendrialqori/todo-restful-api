@@ -1,6 +1,6 @@
 package constant
 
 const (
-	StatusOnProgress = "ONPROGRESS"
-	StatusDone       = "DONE"
+	StatusOnPending = "PENDING"
+	StatusDone      = "DONE"
 )
