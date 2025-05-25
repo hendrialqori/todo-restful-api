@@ -8,7 +8,7 @@ import (
 func NewDB() *sql.DB {
 	var (
 		driver = "mysql"
-		dsn    = "root:root@(localhost:3306)/todo_api?parseTime=true"
+		dsn    = "root:root@tcp(localhost:3306)/todo_restful_api?parseTime=true"
 	)
 
 	db, err := sql.Open(driver, dsn)
