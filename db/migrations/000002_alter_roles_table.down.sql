@@ -1,0 +1,5 @@
+START TRANSACTION;
+
+ALTER TABLE roles DROP INDEX unique_name;
+
+COMMIT;
