@@ -8,5 +8,6 @@ type TodoCreateRequest struct {
 type TodoUpdateRequest struct {
 	Id     int    `validate:"required"`
 	Title  string `validate:"required,max=200" json:"title"`
-	Status string `validate:"required,oneof=DONE ONPROGRESS"`
+	Status string `validate:"required,oneof=DONE PENDING" json:"status"`
+	UserId int    `validate:"required" json:"user_id"`
 }

@@ -7,5 +7,5 @@ type Todo struct {
 	UserId    int
 	User      User
 	CreatedAt string
-	UpdatedAt string
+	UpdatedAt *string
 }

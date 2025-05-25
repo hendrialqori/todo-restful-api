@@ -33,16 +33,16 @@ func (service *TodoServiceImpl) Create(request web.TodoCreateRequest) web.TodoRe
 	return web.TodoResponse{
 		Id:     todoCreateRequest.Id,
 		Title:  todoCreateRequest.Title,
-		Status: constant.StatusOnProgress,
+		Status: constant.StatusOnPending,
 	}
 }
 
 // Delete implements TodoService.
-func (service *TodoServiceImpl) Delete(todoId int) {
+func (service *TodoServiceImpl) Delete(todoId int, userId int) {
 	if _, err := service.TodoRepository.FindById(todoId); err != nil {
 		panic(exception.NewNotFoundError(err.Error()))
 	}
-	service.TodoRepository.Delete(todoId)
+	service.TodoRepository.Delete(todoId, userId)
 }
 
 // FindAll implements TodoService.
@@ -83,6 +83,7 @@ func (service *TodoServiceImpl) Update(request web.TodoUpdateRequest) web.TodoRe
 
 	todo.Title = request.Title
 	todo.Status = request.Status
+	todo.UserId = request.UserId
 
 	todo = service.TodoRepository.Update(todo)
 	todoResponse := web.TodoResponse{

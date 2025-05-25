@@ -21,5 +21,5 @@ func TodoRouter(router *httprouter.Router, DB *sql.DB, validate *validator.Valid
 	router.GET("/api/todos/:userId", roleController.FindAll)
 	router.POST("/api/todos", roleController.Create)
 	router.PUT("/api/todos/:todoId", roleController.Update)
-	router.DELETE("/api/todos/:todoId", roleController.Delete)
+	router.DELETE("/api/todos/:todoId/users/:userId", roleController.Delete)
 }
