@@ -13,9 +13,10 @@ type TodoRepositoryImpl struct {
 // FindById implements TodoRepository.
 func (repository *TodoRepositoryImpl) FindById(todoId int) (domain.Todo, error) {
 	query := `
-		select todo.id, todo.title, todo.status, todo.created_at, todo.updated_at
-		from todos as todo
-		where todo.id = (?)
+		SELECT todo.id, todo.title, todo.status, todo.created_at, todo.updated_at
+		FROM todos AS todo
+		JOIN users AS user ON (todo.user_id = user.id)
+		WHERE todo.id = (?)
 	`
 	var todo domain.Todo
 
@@ -30,7 +31,7 @@ func (repository *TodoRepositoryImpl) FindById(todoId int) (domain.Todo, error) 
 
 // Create implements TodoRepository.
 func (repository TodoRepositoryImpl) Create(todo domain.Todo) domain.Todo {
-	query := `insert into todos(title, user_id) values (?, ?)`
+	query := `INSERT INTO todos(title, user_id) VALUES (?, ?)`
 
 	result, err := repository.DB.Exec(query, todo.Title, todo.UserId)
 	if err != nil {
@@ -48,9 +49,9 @@ func (repository TodoRepositoryImpl) Create(todo domain.Todo) domain.Todo {
 }
 
 // Delete implements TodoRepository.
-func (repository TodoRepositoryImpl) Delete(todoId int) {
-	query := `delete from todos where id = (?)`
-	if _, err := repository.DB.Exec(query, todoId); err != nil {
+func (repository TodoRepositoryImpl) Delete(todoId int, userId int) {
+	query := `delete from todos where id = (?) and user_id = (?)`
+	if _, err := repository.DB.Exec(query, todoId, userId); err != nil {
 		panic(err)
 	}
 }
@@ -58,11 +59,11 @@ func (repository TodoRepositoryImpl) Delete(todoId int) {
 // FindAll implements TodoRepository.
 func (repository TodoRepositoryImpl) FindAll(todoId int) []domain.Todo {
 	query := `
-		select todo.id, todo.title, todo.status ,json_object('id', user.id, 'email', user.email ,'username', user.username) as user,
+		SELECT todo.id, todo.title, todo.status, json_object('id', user.id, 'email', user.email ,'username', user.username) AS user,
 			 todo.created_at ,todo.updated_at
-		from todos as todo
-		join users as user on (todo.user_id = user.id)
-		where user.id = (?)
+		FROM todos AS todo
+		JOIN users AS user ON (todo.user_id = user.id)
+		WHERE user.id = (?)
 	`
 	rows, err := repository.DB.Query(query, todoId)
 	if err != nil {
@@ -90,11 +91,13 @@ func (repository TodoRepositoryImpl) FindAll(todoId int) []domain.Todo {
 
 // Update implements TodoRepository.
 func (repository TodoRepositoryImpl) Update(todo domain.Todo) domain.Todo {
-	query := `update todos set status = (?), updated_at = current_timestamp where id = (?)`
-	if _, err := repository.DB.Exec(query, todo.Status, todo.Id); err != nil {
+	query := `
+		UPDATE todos
+		SET title = (?), status = (?), updated_at = current_timestamp
+		WHERE id = (?) AND user_id = (?)`
+	if _, err := repository.DB.Exec(query, todo.Title, todo.Status, todo.Id, todo.UserId); err != nil {
 		panic(err)
 	}
-
 	return todo
 }
 

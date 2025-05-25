@@ -13,7 +13,7 @@ type UserRepositoryImpl struct {
 // Create implements UserRepository.
 func (repository *UserRepositoryImpl) Create(user domain.User) domain.User {
 	query := `
-		insert into users(email, username, role_id) values(?, ?, ?)
+		INSERT INTO users(email, username, role_id) VALUES(?, ?, ?)
 	`
 	result, err := repository.DB.Exec(query, user.Email, user.UserName, user.RoleId)
 	if err != nil {
@@ -41,10 +41,10 @@ func (repository *UserRepositoryImpl) Delete(userId int) {
 // FindAll implements UserRepository.
 func (repository *UserRepositoryImpl) FindAll() []domain.User {
 	query := `
-		select u.id, u.email, u.username, json_object('id',r.id,'name',r.name) as role,
+		SELECT u.id, u.email, u.username, json_object('id',r.id,'name',r.name) AS ROLE,
 		 u.created_at, u.updated_at
-		from users as u
-		join roles as r on (u.role_id = r.id)
+		FROM users AS u
+		JOIN roles AS r ON (u.role_id = r.id)
 	`
 	rows, err := repository.DB.Query(query)
 
@@ -77,11 +77,11 @@ func (repository *UserRepositoryImpl) FindAll() []domain.User {
 // FindById implements UserRepository.
 func (repository *UserRepositoryImpl) FindById(userId int) (domain.User, error) {
 	query := `
-		select u.id, u.email, u.username, json_object('id',r.id,'name',r.name) as role,
+		SELECT u.id, u.email, u.username, json_object('id',r.id,'name',r.name) AS ROLE,
 		u.created_at, u.updated_at
-		from users as u
-		join roles as r on (u.role_id = r.id)
-		where u.id = (?)
+		FROM users AS u
+		JOIN roles AS r ON (u.role_id = r.id)
+		WHERE u.id = (?)
 	`
 	row := repository.DB.QueryRow(query, userId)
 
@@ -102,7 +102,7 @@ func (repository *UserRepositoryImpl) FindById(userId int) (domain.User, error) 
 // Update implements UserRepository.
 func (repository *UserRepositoryImpl) Update(user domain.User) domain.User {
 	query := `
-		update users set email = (?), username = (?), updated_at = current_timestamp where id = (?)
+		UPDATE users SET email = (?), username = (?), updated_at = current_timestamp WHERE id = (?)
 	`
 	if _, err := repository.DB.Exec(query, user.Email, user.UserName, user.Id); err != nil {
 		panic(err)
