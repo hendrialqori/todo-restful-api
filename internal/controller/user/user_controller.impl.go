@@ -3,7 +3,7 @@ package controller
 import (
 	"encoding/json"
 	"net/http"
-	"strconv"
+	"todo-restful-api/helper"
 	"todo-restful-api/internal/model/web"
 	service "todo-restful-api/internal/service/user"
 
@@ -14,11 +14,20 @@ type UserControllerImpl struct {
 	UserService service.UserService
 }
 
-// Create implements UserController.
+// CreateUsers godoc
+//
+//	@Summary		Create new user
+//	@Description	Create new user
+//	@Tags			Users
+//	@Accept			json
+//	@Produce		json
+//	@Param			body	body	web.UserCreateRequest	true	"all fields is require | username field shoud not contains whitespace"
+//	@Success		200	{object}	web.ApiResponse
+//	@Router			/users [post]
 func (controller *UserControllerImpl) Create(write http.ResponseWriter, request *http.Request, params httprouter.Params) {
+
 	// initiate struct user request
 	var userRequest web.UserCreateRequest
-
 	// parse request body with json NewDecoder method and assign to userRequest struct
 	if err := json.NewDecoder(request.Body).Decode(&userRequest); err != nil {
 		panic(err)
@@ -26,7 +35,6 @@ func (controller *UserControllerImpl) Create(write http.ResponseWriter, request 
 
 	// passing userRequest into user service method
 	userResponse := controller.UserService.Create(userRequest)
-
 	// mapping userResponse into ApiResponse
 	apiResponse := web.ApiResponse{
 		Ok:      true,
@@ -34,44 +42,41 @@ func (controller *UserControllerImpl) Create(write http.ResponseWriter, request 
 		Message: "Success",
 		Data:    userResponse,
 	}
-
-	// add content type header response
-	write.Header().Add("Content-Type", "application/json")
-
-	// create encoder to encode apiResponse variable, then return into http response
-	encode := json.NewEncoder(write)
-	if err := encode.Encode(apiResponse); err != nil {
-		panic(err)
-	}
+	helper.ResponseToJson(write, apiResponse)
 }
 
-// Delete implements UserController.
+// DeleteUser godoc
+//
+//	@Summary		Delete user base on id
+//	@Description	Delete existing user base on id
+//	@Tags			Users
+//	@Accept			json
+//	@Produce		json
+//	@Param			id		path	int						true	"user id"
+//	@Success		200	{object}	web.ApiResponse
+//	@Failure		404	{object}	web.NotFoundResponse
+//	@Router			/users/{id} [delete]
 func (controller *UserControllerImpl) Delete(write http.ResponseWriter, request *http.Request, params httprouter.Params) {
-	userId := params.ByName("userId")
-	id, err := strconv.Atoi(userId)
-	if err != nil {
-		panic(err)
-	}
+	userId := helper.ParamInt(params, "userId")
 
-	controller.UserService.Delete(id)
-
+	controller.UserService.Delete(userId)
 	apiResponse := web.ApiResponse{
 		Ok:      true,
 		Code:    http.StatusOK,
 		Message: "success",
 	}
-
-	// add content type header response
-	write.Header().Add("Content-Type", "application/json")
-
-	// create encoder to encode apiResponse variable, then return into http response
-	encode := json.NewEncoder(write)
-	if err := encode.Encode(apiResponse); err != nil {
-		panic(err)
-	}
+	helper.ResponseToJson(write, apiResponse)
 }
 
-// FindAll implements UserController.
+// ListUsers godoc
+//
+//	@Summary		Get all user
+//	@Description	Retrieve all existing user
+//	@Tags			Users
+//	@Accept			json
+//	@Produce		json
+//	@Success		200	{object}	web.ApiResponse
+//	@Router			/users [get]
 func (controller *UserControllerImpl) FindAll(write http.ResponseWriter, request *http.Request, params httprouter.Params) {
 	usersResponse := controller.UserService.FindAll()
 	apiResponse := web.ApiResponse{
@@ -80,57 +85,59 @@ func (controller *UserControllerImpl) FindAll(write http.ResponseWriter, request
 		Message: "Sucess",
 		Data:    usersResponse,
 	}
-
-	write.Header().Add("Content-Type", "application/json")
-	encode := json.NewEncoder(write)
-	if err := encode.Encode(apiResponse); err != nil {
-		panic(err)
-	}
+	helper.ResponseToJson(write, apiResponse)
 }
 
-// FindById implements UserController.
+// GetUserById godoc
+//
+//	@Summary		Get user base on id
+//	@Description	Retrieve existing user base on id
+//	@Tags			Users
+//	@Accept			json
+//	@Produce		json
+//	@Param			id		path	int						true	"user id"
+//	@Success		200	{object}	web.ApiResponse
+//	@Failure		404	{object}	web.NotFoundResponse
+//	@Router			/users/{id} [get]
 func (controller *UserControllerImpl) FindById(write http.ResponseWriter, request *http.Request, params httprouter.Params) {
-	userId := params.ByName("userId")
-	id, err := strconv.Atoi(userId)
-	if err != nil {
-		panic(err)
-	}
+	userId := helper.ParamInt(params, "userId")
 
-	userResponse := controller.UserService.FindById(id)
+	userResponse := controller.UserService.FindById(userId)
 	apiResponse := web.ApiResponse{
 		Ok:      true,
 		Code:    http.StatusOK,
 		Message: "Success",
 		Data:    userResponse,
 	}
-
-	write.Header().Add("Content-Type", "application/json")
-	encode := json.NewEncoder(write)
-	if err := encode.Encode(apiResponse); err != nil {
-		panic(err)
-	}
+	helper.ResponseToJson(write, apiResponse)
 }
 
-// Update implements UserController.
+// UpdateUserById godoc
+//
+//	@Summary		Update user base on id
+//	@Description	Update existing user base on id
+//	@Tags			Users
+//	@Accept			json
+//	@Produce		json
+//	@Param			id		path	int						true	"user id"
+//	@Param 			body 	body 	web.UserUpdateRequest 	true	"ignore/delete id field on request body"
+//	@Success		200	{object}	web.ApiResponse
+//	@Failure		404	{object}	web.NotFoundResponse
+//	@Router			/users/{id} [put]
 func (controller *UserControllerImpl) Update(write http.ResponseWriter, request *http.Request, params httprouter.Params) {
-	userId := params.ByName("userId")
-	id, err := strconv.Atoi(userId)
-	if err != nil {
-		panic(err)
-	}
+	userId := helper.ParamInt(params, "userId")
 
 	// initiate struct role request
 	var userRequest web.UserUpdateRequest
-	userRequest.Id = id
+	userRequest.Id = userId
 
 	// parse request body with json NewDecoder method and assign to userRequest struct
-	if err = json.NewDecoder(request.Body).Decode(&userRequest); err != nil {
+	if err := json.NewDecoder(request.Body).Decode(&userRequest); err != nil {
 		panic(err)
 	}
 
 	// passing userRequest into role service method
 	userResponse := controller.UserService.Update(userRequest)
-
 	// mapping roleResponse into ApiResponse
 	apiResponse := web.ApiResponse{
 		Ok:      true,
@@ -138,15 +145,7 @@ func (controller *UserControllerImpl) Update(write http.ResponseWriter, request 
 		Message: "Success",
 		Data:    userResponse,
 	}
-
-	// add content type header response
-	write.Header().Add("Content-Type", "application/json")
-
-	// create encoder to encode apiResponse variable, then return into http response
-	encode := json.NewEncoder(write)
-	if err := encode.Encode(apiResponse); err != nil {
-		panic(err)
-	}
+	helper.ResponseToJson(write, apiResponse)
 }
 
 func NewUserController(UserService service.UserService) UserController {

@@ -9,9 +9,43 @@
     "host": "localhost:3000",
     "basePath": "/api",
     "paths": {
+        "/auth/login": {
+            "post": {
+                "description": "Authentication with login",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Auth login",
+                "parameters": [
+                    {
+                        "description": "all fields is require",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/web.AuthLoginRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/web.ApiResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/roles": {
             "get": {
-                "description": "Retrieve all existing roles",
+                "description": "Retrieve all existing role",
                 "consumes": [
                     "application/json"
                 ],
@@ -21,18 +55,44 @@
                 "tags": [
                     "Roles"
                 ],
-                "summary": "Get roles",
+                "summary": "Get all role",
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/web.ApiResponse"
                         }
-                    },
-                    "404": {
-                        "description": "Not Found",
+                    }
+                }
+            },
+            "post": {
+                "description": "Create new role",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Roles"
+                ],
+                "summary": "Create new role",
+                "parameters": [
+                    {
+                        "description": "all fields is require",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
                         "schema": {
-                            "$ref": "#/definitions/web.NotFoundResponse"
+                            "$ref": "#/definitions/web.RoleCreateRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/web.ApiResponse"
                         }
                     }
                 }
@@ -40,7 +100,7 @@
         },
         "/roles/{id}": {
             "get": {
-                "description": "Retrieve existing roles base on id",
+                "description": "Retrieve existing role base on id",
                 "consumes": [
                     "application/json"
                 ],
@@ -50,11 +110,11 @@
                 "tags": [
                     "Roles"
                 ],
-                "summary": "Get roles base on id",
+                "summary": "Get role base on id",
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "Role Id",
+                        "description": "role id",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -76,7 +136,7 @@
                 }
             },
             "put": {
-                "description": "Update existing roles base on id",
+                "description": "Update existing role base on id",
                 "consumes": [
                     "application/json"
                 ],
@@ -86,17 +146,17 @@
                 "tags": [
                     "Roles"
                 ],
-                "summary": "Update roles base on id",
+                "summary": "Update role base on id",
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "Role Id",
+                        "description": "role id",
                         "name": "id",
                         "in": "path",
                         "required": true
                     },
                     {
-                        "description": "Data role yang akan diupdate (tanpa ID)",
+                        "description": "ignore or delete id field on request body",
                         "name": "body",
                         "in": "body",
                         "required": true,
@@ -110,50 +170,6 @@
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/web.ApiResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/web.NotFoundResponse"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "description": "Create new role",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Roles"
-                ],
-                "summary": "Create roles",
-                "parameters": [
-                    {
-                        "description": "Role name must be capitalize",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/web.RoleCreateRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/web.ApiResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/web.NotFoundResponse"
                         }
                     }
                 }
@@ -173,7 +189,7 @@
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "Role Id",
+                        "description": "role id",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -184,6 +200,357 @@
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/web.ApiResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/web.NotFoundResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/todos": {
+            "post": {
+                "description": "Create new todo",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Todos"
+                ],
+                "summary": "Create new todo",
+                "parameters": [
+                    {
+                        "description": "all fields is require",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/web.TodoCreateRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/web.ApiResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/todos/{id}": {
+            "put": {
+                "description": "Update existing todo base on id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Todos"
+                ],
+                "summary": "Update todo base on id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "todo id",
+                        "name": "role_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "user id",
+                        "name": "user_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "ignore or delete id field on request body",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/web.TodoUpdateRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/web.ApiResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/web.NotFoundResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/todos/{todo_id}/users/{user_id}": {
+            "delete": {
+                "description": "Delete existing todo base on id and user id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Todos"
+                ],
+                "summary": "Delete todo base on id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "todo id",
+                        "name": "todo_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "user id",
+                        "name": "user_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/web.ApiResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/web.NotFoundResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/todos/{user_id}": {
+            "get": {
+                "description": "Retrieve existing todo base on user id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Todos"
+                ],
+                "summary": "Get all todo base on user id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "user id",
+                        "name": "user_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/web.ApiResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/web.NotFoundResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/users": {
+            "get": {
+                "description": "Retrieve all existing user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Get all user",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/web.ApiResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Create new user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Create new user",
+                "parameters": [
+                    {
+                        "description": "all fields is require | username field shoud not contains whitespace",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/web.UserCreateRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/web.ApiResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/{id}": {
+            "get": {
+                "description": "Retrieve existing user base on id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Get user base on id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "user id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/web.ApiResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/web.NotFoundResponse"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Update existing user base on id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Update user base on id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "user id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "ignore/delete id field on request body",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/web.UserUpdateRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/web.ApiResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/web.NotFoundResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete existing user base on id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Delete user base on id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "user id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/web.ApiResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/web.NotFoundResponse"
                         }
                     }
                 }
@@ -206,6 +573,21 @@
                 "ok": {
                     "type": "boolean",
                     "example": true
+                }
+            }
+        },
+        "web.AuthLoginRequest": {
+            "type": "object",
+            "required": [
+                "email",
+                "username"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
                 }
             }
         },
@@ -255,6 +637,90 @@
                     "maxLength": 50,
                     "minLength": 0,
                     "example": "ADMIN"
+                }
+            }
+        },
+        "web.TodoCreateRequest": {
+            "type": "object",
+            "required": [
+                "title",
+                "user_id"
+            ],
+            "properties": {
+                "title": {
+                    "type": "string",
+                    "maxLength": 200
+                },
+                "user_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "web.TodoUpdateRequest": {
+            "type": "object",
+            "required": [
+                "id",
+                "status",
+                "title",
+                "user_id"
+            ],
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "status": {
+                    "type": "string",
+                    "enum": [
+                        "DONE",
+                        "PENDING"
+                    ]
+                },
+                "title": {
+                    "type": "string",
+                    "maxLength": 200
+                },
+                "user_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "web.UserCreateRequest": {
+            "type": "object",
+            "required": [
+                "email",
+                "role_id",
+                "username"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "role_id": {
+                    "type": "integer"
+                },
+                "username": {
+                    "type": "string",
+                    "maxLength": 200
+                }
+            }
+        },
+        "web.UserUpdateRequest": {
+            "type": "object",
+            "required": [
+                "email",
+                "id",
+                "username"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "username": {
+                    "type": "string",
+                    "maxLength": 200
                 }
             }
         }

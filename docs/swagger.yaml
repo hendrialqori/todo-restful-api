@@ -13,6 +13,16 @@ definitions:
         example: true
         type: boolean
     type: object
+  web.AuthLoginRequest:
+    properties:
+      email:
+        type: string
+      username:
+        type: string
+    required:
+    - email
+    - username
+    type: object
   web.NotFoundResponse:
     properties:
       code:
@@ -48,6 +58,65 @@ definitions:
     - id
     - name
     type: object
+  web.TodoCreateRequest:
+    properties:
+      title:
+        maxLength: 200
+        type: string
+      user_id:
+        type: integer
+    required:
+    - title
+    - user_id
+    type: object
+  web.TodoUpdateRequest:
+    properties:
+      id:
+        type: integer
+      status:
+        enum:
+        - DONE
+        - PENDING
+        type: string
+      title:
+        maxLength: 200
+        type: string
+      user_id:
+        type: integer
+    required:
+    - id
+    - status
+    - title
+    - user_id
+    type: object
+  web.UserCreateRequest:
+    properties:
+      email:
+        type: string
+      role_id:
+        type: integer
+      username:
+        maxLength: 200
+        type: string
+    required:
+    - email
+    - role_id
+    - username
+    type: object
+  web.UserUpdateRequest:
+    properties:
+      email:
+        type: string
+      id:
+        type: integer
+      username:
+        maxLength: 200
+        type: string
+    required:
+    - email
+    - id
+    - username
+    type: object
 host: localhost:3000
 info:
   contact: {}
@@ -55,11 +124,33 @@ info:
   title: Todo Restful API
   version: "1.0"
 paths:
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Authentication with login
+      parameters:
+      - description: all fields is require
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/web.AuthLoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/web.ApiResponse'
+      summary: Auth login
+      tags:
+      - Auth
   /roles:
     get:
       consumes:
       - application/json
-      description: Retrieve all existing roles
+      description: Retrieve all existing role
       produces:
       - application/json
       responses:
@@ -67,56 +158,7 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/web.ApiResponse'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/web.NotFoundResponse'
-      summary: Get roles
-      tags:
-      - Roles
-  /roles/{id}:
-    delete:
-      consumes:
-      - application/json
-      description: Delete existing roles base on id
-      parameters:
-      - description: Role Id
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/web.ApiResponse'
-      summary: Delete roles base on id
-      tags:
-      - Roles
-    get:
-      consumes:
-      - application/json
-      description: Retrieve existing roles base on id
-      parameters:
-      - description: Role Id
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/web.ApiResponse'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/web.NotFoundResponse'
-      summary: Get roles base on id
+      summary: Get all role
       tags:
       - Roles
     post:
@@ -124,7 +166,7 @@ paths:
       - application/json
       description: Create new role
       parameters:
-      - description: Role name must be capitalize
+      - description: all fields is require
         in: body
         name: body
         required: true
@@ -137,24 +179,69 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/web.ApiResponse'
+      summary: Create new role
+      tags:
+      - Roles
+  /roles/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete existing roles base on id
+      parameters:
+      - description: role id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/web.ApiResponse'
         "404":
           description: Not Found
           schema:
             $ref: '#/definitions/web.NotFoundResponse'
-      summary: Create roles
+      summary: Delete roles base on id
+      tags:
+      - Roles
+    get:
+      consumes:
+      - application/json
+      description: Retrieve existing role base on id
+      parameters:
+      - description: role id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/web.ApiResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/web.NotFoundResponse'
+      summary: Get role base on id
       tags:
       - Roles
     put:
       consumes:
       - application/json
-      description: Update existing roles base on id
+      description: Update existing role base on id
       parameters:
-      - description: Role Id
+      - description: role id
         in: path
         name: id
         required: true
         type: integer
-      - description: Data role yang akan diupdate (tanpa ID)
+      - description: ignore or delete id field on request body
         in: body
         name: body
         required: true
@@ -167,11 +254,235 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/web.ApiResponse'
+      summary: Update role base on id
+      tags:
+      - Roles
+  /todos:
+    post:
+      consumes:
+      - application/json
+      description: Create new todo
+      parameters:
+      - description: all fields is require
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/web.TodoCreateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/web.ApiResponse'
+      summary: Create new todo
+      tags:
+      - Todos
+  /todos/{id}:
+    put:
+      consumes:
+      - application/json
+      description: Update existing todo base on id
+      parameters:
+      - description: todo id
+        in: path
+        name: role_id
+        required: true
+        type: integer
+      - description: user id
+        in: path
+        name: user_id
+        required: true
+        type: integer
+      - description: ignore or delete id field on request body
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/web.TodoUpdateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/web.ApiResponse'
         "404":
           description: Not Found
           schema:
             $ref: '#/definitions/web.NotFoundResponse'
-      summary: Update roles base on id
+      summary: Update todo base on id
       tags:
-      - Roles
+      - Todos
+  /todos/{todo_id}/users/{user_id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete existing todo base on id and user id
+      parameters:
+      - description: todo id
+        in: path
+        name: todo_id
+        required: true
+        type: integer
+      - description: user id
+        in: path
+        name: user_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/web.ApiResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/web.NotFoundResponse'
+      summary: Delete todo base on id
+      tags:
+      - Todos
+  /todos/{user_id}:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve existing todo base on user id
+      parameters:
+      - description: user id
+        in: path
+        name: user_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/web.ApiResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/web.NotFoundResponse'
+      summary: Get all todo base on user id
+      tags:
+      - Todos
+  /users:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve all existing user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/web.ApiResponse'
+      summary: Get all user
+      tags:
+      - Users
+    post:
+      consumes:
+      - application/json
+      description: Create new user
+      parameters:
+      - description: all fields is require | username field shoud not contains whitespace
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/web.UserCreateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/web.ApiResponse'
+      summary: Create new user
+      tags:
+      - Users
+  /users/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete existing user base on id
+      parameters:
+      - description: user id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/web.ApiResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/web.NotFoundResponse'
+      summary: Delete user base on id
+      tags:
+      - Users
+    get:
+      consumes:
+      - application/json
+      description: Retrieve existing user base on id
+      parameters:
+      - description: user id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/web.ApiResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/web.NotFoundResponse'
+      summary: Get user base on id
+      tags:
+      - Users
+    put:
+      consumes:
+      - application/json
+      description: Update existing user base on id
+      parameters:
+      - description: user id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: ignore/delete id field on request body
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/web.UserUpdateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/web.ApiResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/web.NotFoundResponse'
+      summary: Update user base on id
+      tags:
+      - Users
 swagger: "2.0"

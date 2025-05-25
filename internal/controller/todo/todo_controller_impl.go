@@ -3,7 +3,7 @@ package controller
 import (
 	"encoding/json"
 	"net/http"
-	"strconv"
+	"todo-restful-api/helper"
 	"todo-restful-api/internal/model/web"
 	service "todo-restful-api/internal/service/todo"
 
@@ -14,68 +14,71 @@ type TodoControllerImpl struct {
 	TodoService service.TodoService
 }
 
-// Create implements TodoController.
+// CreateTodos godoc
+//
+//	@Summary		Create new todo
+//	@Description	Create new todo
+//	@Tags			Todos
+//	@Accept			json
+//	@Produce		json
+//	@Param			body	body	web.TodoCreateRequest	true	"all fields is require"
+//	@Success		200	{object}	web.ApiResponse
+//	@Router			/todos [post]
 func (controller *TodoControllerImpl) Create(write http.ResponseWriter, request *http.Request, params httprouter.Params) {
 	var todoRequest web.TodoCreateRequest
-
 	if err := json.NewDecoder(request.Body).Decode(&todoRequest); err != nil {
 		panic(err)
 	}
 
 	todoResponse := controller.TodoService.Create(todoRequest)
-
 	apiResponse := web.ApiResponse{
 		Ok:      true,
 		Code:    http.StatusOK,
 		Message: "success",
 		Data:    todoResponse,
 	}
-
-	// add content type header response
-	write.Header().Add("Content-Type", "application/json")
-
-	// create encoder to encode apiResponse variable, then return into http response
-	encode := json.NewEncoder(write)
-	if err := encode.Encode(apiResponse); err != nil {
-		panic(err)
-	}
+	helper.ResponseToJson(write, apiResponse)
 }
 
-// Delete implements TodoController.
+// DeleteTodosById godoc
+//
+//	@Summary		Delete todo base on id
+//	@Description	Delete existing todo base on id and user id
+//	@Tags			Todos
+//	@Param			todo_id		path	int	true	"todo id"
+//	@Param			user_id		path	int	true	"user id"
+//	@Accept			json
+//	@Produce		json
+//	@Success		200	{object}	web.ApiResponse
+//	@Failure		404	{object}	web.NotFoundResponse
+//	@Router			/todos/{todo_id}/users/{user_id} [delete]
 func (controller *TodoControllerImpl) Delete(write http.ResponseWriter, request *http.Request, params httprouter.Params) {
-	todoId := params.ByName("todoId")
-	id, err := strconv.Atoi(todoId)
-	if err != nil {
-		panic(err)
-	}
-
-	controller.TodoService.Delete(id)
+	todoId := helper.ParamInt(params, "todoId")
+	userId := helper.ParamInt(params, "userId")
+	controller.TodoService.Delete(todoId, userId)
 
 	apiResponse := web.ApiResponse{
 		Ok:      true,
 		Code:    http.StatusOK,
 		Message: "success",
 	}
-
-	// add content type header response
-	write.Header().Add("Content-Type", "application/json")
-
-	// create encoder to encode apiResponse variable, then return into http response
-	encode := json.NewEncoder(write)
-	if err := encode.Encode(apiResponse); err != nil {
-		panic(err)
-	}
+	helper.ResponseToJson(write, apiResponse)
 }
 
-// FindAll implements TodoController.
+// GetTodosById godoc
+//
+//	@Summary		Get all todo base on user id
+//	@Description	Retrieve existing todo base on user id
+//	@Tags			Todos
+//	@Param			user_id	path	int	true	"user id"
+//	@Accept			json
+//	@Produce		json
+//	@Success		200	{object}	web.ApiResponse
+//	@Failure		404	{object}	web.NotFoundResponse
+//	@Router			/todos/{user_id} [get]
 func (controller *TodoControllerImpl) FindAll(write http.ResponseWriter, request *http.Request, params httprouter.Params) {
-	userId := params.ByName("userId")
-	id, err := strconv.Atoi(userId)
-	if err != nil {
-		panic(err)
-	}
-
-	todosResponse := controller.TodoService.FindAll(id)
+	userId := helper.ParamInt(params, "userId")
+	todosResponse := controller.TodoService.FindAll(userId)
 
 	apiResponse := web.ApiResponse{
 		Ok:      true,
@@ -83,32 +86,31 @@ func (controller *TodoControllerImpl) FindAll(write http.ResponseWriter, request
 		Message: "success",
 		Data:    todosResponse,
 	}
-
-	// add content type header response
-	write.Header().Add("Content-Type", "application/json")
-
-	// create encoder to encode apiResponse variable, then return into http response
-	encode := json.NewEncoder(write)
-	if err := encode.Encode(apiResponse); err != nil {
-		panic(err)
-	}
+	helper.ResponseToJson(write, apiResponse)
 }
 
-// Update implements TodoController.
+// UpdatedTodos godoc
+//
+//	@Summary		Update todo base on id
+//	@Description	Update existing todo base on id
+//	@Tags			Todos
+//	@Param			role_id		path	int						true	"todo id"
+//	@Param			user_id		path	int						true	"user id"
+//	@Param			body	body	web.TodoUpdateRequest	true	"ignore or delete id field on request body"
+//	@Accept			json
+//	@Produce		json
+//	@Success		200	{object}	web.ApiResponse
+//	@Failure		404	{object}	web.NotFoundResponse
+//	@Router			/todos/{id} [put]
 func (controller *TodoControllerImpl) Update(write http.ResponseWriter, request *http.Request, params httprouter.Params) {
 	var todoRequest web.TodoUpdateRequest
 
-	todoId := params.ByName("todoId")
-	id, err := strconv.Atoi(todoId)
-	if err != nil {
-		panic(err)
-	}
+	todoId := helper.ParamInt(params, "todoId")
 
 	if err := json.NewDecoder(request.Body).Decode(&todoRequest); err != nil {
 		panic(err)
 	}
-
-	todoRequest.Id = id
+	todoRequest.Id = todoId
 
 	todoResponse := controller.TodoService.Update(todoRequest)
 	apiResponse := web.ApiResponse{
@@ -117,14 +119,7 @@ func (controller *TodoControllerImpl) Update(write http.ResponseWriter, request 
 		Message: "success",
 		Data:    todoResponse,
 	}
-
-	// add content type header response
-	write.Header().Add("Content-Type", "application/json")
-
-	// create encoder to encode apiResponse variable, then return into http response
-	if err := json.NewEncoder(write).Encode(apiResponse); err != nil {
-		panic(err)
-	}
+	helper.ResponseToJson(write, apiResponse)
 }
 
 func NewTodoController(TodoService service.TodoService) TodoController {
