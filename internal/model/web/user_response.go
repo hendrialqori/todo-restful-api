@@ -6,5 +6,5 @@ type UserResponse struct {
 	UserName  string       `json:"username"`
 	Role      RoleResponse `json:"role,omitzero"`
 	CreatedAt string       `json:"created_at,omitempty"`
-	UpdatedAt string       `json:"updated_at,omitempty"`
+	UpdatedAt *string      `json:"updated_at,omitempty"`
 }
