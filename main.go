@@ -5,6 +5,9 @@ import (
 	"todo-restful-api/app"
 	"todo-restful-api/exception"
 	"todo-restful-api/internal/route"
+	"todo-restful-api/middleware"
+
+	_ "github.com/go-sql-driver/mysql"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/julienschmidt/httprouter"
@@ -30,6 +33,7 @@ func main() {
 	// Swagger documentation route
 	router.Handler(http.MethodGet, "/swagger/*any", httpSwagger.WrapHandler)
 
+	route.AuthRouter(router, DB, validate)
 	route.RoleRouter(router, DB, validate)
 	route.UserRouter(router, DB, validate)
 	route.TodoRouter(router, DB, validate)
@@ -38,7 +42,7 @@ func main() {
 
 	server := http.Server{
 		Addr:    "localhost:3000",
-		Handler: router,
+		Handler: middleware.NewAuthMiddleware(router),
 	}
 
 	server.ListenAndServe()
