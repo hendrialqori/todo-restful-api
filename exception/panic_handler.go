@@ -61,7 +61,7 @@ func validationError(w http.ResponseWriter, err any) bool {
 	if validatorError, ok := err.(validator.ValidationErrors); ok {
 		errMessages := make([]string, 0)
 		for _, fieldErr := range validatorError {
-			msg := fmt.Sprintf("Field '%s' failed on '%s' validation", fieldErr.Field(), fieldErr.Tag())
+			msg := fmt.Sprintf("Field '%s' failed on '%s' validation with error '%s", fieldErr.Field(), fieldErr.Tag(), fieldErr.Error())
 			errMessages = append(errMessages, msg)
 		}
 		writeError(w, http.StatusUnprocessableEntity, "Validation error", strings.Join(errMessages, ", "))
