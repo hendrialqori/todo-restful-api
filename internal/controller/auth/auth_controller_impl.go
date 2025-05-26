@@ -21,8 +21,8 @@ type AuthControllerImpl struct {
 //	@Tags			Auth
 //	@Accept			json
 //	@Produce		json
-//	@Param			body	body	web.AuthLoginRequest	true	"all fields is require"
-//	@Success		200	{object}	web.ApiResponse
+//	@Param			body	body		web.AuthLoginRequest	true	"all fields is require"
+//	@Success		200		{object}	web.ApiResponse[web.AuthResponse]
 //	@Router			/auth/login [post]
 func (controller *AuthControllerImpl) Login(write http.ResponseWriter, request *http.Request, params httprouter.Params) {
 	var authLoginRequest web.AuthLoginRequest
@@ -32,7 +32,7 @@ func (controller *AuthControllerImpl) Login(write http.ResponseWriter, request *
 	}
 
 	authResponse := controller.AuthService.Login(authLoginRequest)
-	apiResponse := web.ApiResponse{
+	apiResponse := web.ApiResponse[web.AuthResponse]{
 		Ok:      true,
 		Code:    http.StatusCreated,
 		Message: "success",

@@ -1,11 +1,102 @@
 basePath: /api
 definitions:
-  web.ApiResponse:
+  web.ApiResponse-array_web_RoleResponse:
     properties:
       code:
         example: 200
         type: integer
-      data: {}
+      data:
+        items:
+          $ref: '#/definitions/web.RoleResponse'
+        type: array
+      message:
+        example: success
+        type: string
+      ok:
+        example: true
+        type: boolean
+    type: object
+  web.ApiResponse-array_web_TodoResponse:
+    properties:
+      code:
+        example: 200
+        type: integer
+      data:
+        items:
+          $ref: '#/definitions/web.TodoResponse'
+        type: array
+      message:
+        example: success
+        type: string
+      ok:
+        example: true
+        type: boolean
+    type: object
+  web.ApiResponse-array_web_UserResponse:
+    properties:
+      code:
+        example: 200
+        type: integer
+      data:
+        items:
+          $ref: '#/definitions/web.UserResponse'
+        type: array
+      message:
+        example: success
+        type: string
+      ok:
+        example: true
+        type: boolean
+    type: object
+  web.ApiResponse-web_AuthResponse:
+    properties:
+      code:
+        example: 200
+        type: integer
+      data:
+        $ref: '#/definitions/web.AuthResponse'
+      message:
+        example: success
+        type: string
+      ok:
+        example: true
+        type: boolean
+    type: object
+  web.ApiResponse-web_RoleResponse:
+    properties:
+      code:
+        example: 200
+        type: integer
+      data:
+        $ref: '#/definitions/web.RoleResponse'
+      message:
+        example: success
+        type: string
+      ok:
+        example: true
+        type: boolean
+    type: object
+  web.ApiResponse-web_TodoResponse:
+    properties:
+      code:
+        example: 200
+        type: integer
+      data:
+        $ref: '#/definitions/web.TodoResponse'
+      message:
+        example: success
+        type: string
+      ok:
+        example: true
+        type: boolean
+    type: object
+  web.ApiResponse-web_UserResponse:
+    properties:
+      code:
+        example: 200
+        type: integer
+      data:
+        $ref: '#/definitions/web.UserResponse'
       message:
         example: success
         type: string
@@ -23,7 +114,24 @@ definitions:
     - email
     - username
     type: object
-  web.NotFoundResponse:
+  web.AuthResponse:
+    properties:
+      token:
+        type: string
+    type: object
+  web.InternalServerErrorResponse:
+    properties:
+      code:
+        example: 500
+        type: integer
+      message:
+        example: internal_server_error
+        type: string
+      ok:
+        example: false
+        type: boolean
+    type: object
+  web.NotFoundErrorResponse:
     properties:
       code:
         example: 404
@@ -44,6 +152,17 @@ definitions:
         type: string
     required:
     - name
+    type: object
+  web.RoleResponse:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      updated_at:
+        type: string
     type: object
   web.RoleUpdateRequest:
     properties:
@@ -69,6 +188,21 @@ definitions:
     - title
     - user_id
     type: object
+  web.TodoResponse:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      status:
+        type: string
+      title:
+        type: string
+      updated_at:
+        type: string
+      user:
+        $ref: '#/definitions/web.UserResponse'
+    type: object
   web.TodoUpdateRequest:
     properties:
       id:
@@ -89,6 +223,18 @@ definitions:
     - title
     - user_id
     type: object
+  web.UnAuthorizedErrorResponse:
+    properties:
+      code:
+        example: 401
+        type: integer
+      message:
+        example: unauthorized_error
+        type: string
+      ok:
+        example: false
+        type: boolean
+    type: object
   web.UserCreateRequest:
     properties:
       email:
@@ -102,6 +248,21 @@ definitions:
     - email
     - role_id
     - username
+    type: object
+  web.UserResponse:
+    properties:
+      created_at:
+        type: string
+      email:
+        type: string
+      id:
+        type: integer
+      role:
+        $ref: '#/definitions/web.RoleResponse'
+      updated_at:
+        type: string
+      username:
+        type: string
     type: object
   web.UserUpdateRequest:
     properties:
@@ -142,7 +303,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/web.ApiResponse'
+            $ref: '#/definitions/web.ApiResponse-web_AuthResponse'
       summary: Auth login
       tags:
       - Auth
@@ -157,7 +318,17 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/web.ApiResponse'
+            $ref: '#/definitions/web.ApiResponse-array_web_RoleResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/web.UnAuthorizedErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/web.InternalServerErrorResponse'
+      security:
+      - Bearer: []
       summary: Get all role
       tags:
       - Roles
@@ -178,7 +349,17 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/web.ApiResponse'
+            $ref: '#/definitions/web.ApiResponse-web_RoleResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/web.UnAuthorizedErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/web.InternalServerErrorResponse'
+      security:
+      - Bearer: []
       summary: Create new role
       tags:
       - Roles
@@ -199,11 +380,19 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/web.ApiResponse'
+            $ref: '#/definitions/web.ApiResponse-web_RoleResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/web.UnAuthorizedErrorResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/web.NotFoundResponse'
+            $ref: '#/definitions/web.NotFoundErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/web.InternalServerErrorResponse'
       summary: Delete roles base on id
       tags:
       - Roles
@@ -223,11 +412,19 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/web.ApiResponse'
+            $ref: '#/definitions/web.ApiResponse-web_RoleResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/web.UnAuthorizedErrorResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/web.NotFoundResponse'
+            $ref: '#/definitions/web.NotFoundErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/web.InternalServerErrorResponse'
       summary: Get role base on id
       tags:
       - Roles
@@ -253,7 +450,19 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/web.ApiResponse'
+            $ref: '#/definitions/web.ApiResponse-web_RoleResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/web.UnAuthorizedErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/web.NotFoundErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/web.InternalServerErrorResponse'
       summary: Update role base on id
       tags:
       - Roles
@@ -275,7 +484,15 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/web.ApiResponse'
+            $ref: '#/definitions/web.ApiResponse-web_TodoResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/web.UnAuthorizedErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/web.InternalServerErrorResponse'
       summary: Create new todo
       tags:
       - Todos
@@ -307,11 +524,19 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/web.ApiResponse'
+            $ref: '#/definitions/web.ApiResponse-web_TodoResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/web.UnAuthorizedErrorResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/web.NotFoundResponse'
+            $ref: '#/definitions/web.NotFoundErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/web.InternalServerErrorResponse'
       summary: Update todo base on id
       tags:
       - Todos
@@ -337,11 +562,19 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/web.ApiResponse'
+            $ref: '#/definitions/web.ApiResponse-web_TodoResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/web.UnAuthorizedErrorResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/web.NotFoundResponse'
+            $ref: '#/definitions/web.NotFoundErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/web.InternalServerErrorResponse'
       summary: Delete todo base on id
       tags:
       - Todos
@@ -362,11 +595,19 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/web.ApiResponse'
+            $ref: '#/definitions/web.ApiResponse-array_web_TodoResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/web.UnAuthorizedErrorResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/web.NotFoundResponse'
+            $ref: '#/definitions/web.NotFoundErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/web.InternalServerErrorResponse'
       summary: Get all todo base on user id
       tags:
       - Todos
@@ -381,7 +622,15 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/web.ApiResponse'
+            $ref: '#/definitions/web.ApiResponse-array_web_UserResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/web.UnAuthorizedErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/web.InternalServerErrorResponse'
       summary: Get all user
       tags:
       - Users
@@ -402,7 +651,15 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/web.ApiResponse'
+            $ref: '#/definitions/web.ApiResponse-web_UserResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/web.UnAuthorizedErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/web.InternalServerErrorResponse'
       summary: Create new user
       tags:
       - Users
@@ -423,11 +680,19 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/web.ApiResponse'
+            $ref: '#/definitions/web.ApiResponse-web_UserResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/web.UnAuthorizedErrorResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/web.NotFoundResponse'
+            $ref: '#/definitions/web.NotFoundErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/web.InternalServerErrorResponse'
       summary: Delete user base on id
       tags:
       - Users
@@ -447,11 +712,19 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/web.ApiResponse'
+            $ref: '#/definitions/web.ApiResponse-web_UserResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/web.UnAuthorizedErrorResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/web.NotFoundResponse'
+            $ref: '#/definitions/web.NotFoundErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/web.InternalServerErrorResponse'
       summary: Get user base on id
       tags:
       - Users
@@ -477,12 +750,25 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/web.ApiResponse'
+            $ref: '#/definitions/web.ApiResponse-web_UserResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/web.UnAuthorizedErrorResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/web.NotFoundResponse'
+            $ref: '#/definitions/web.NotFoundErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/web.InternalServerErrorResponse'
       summary: Update user base on id
       tags:
       - Users
+securityDefinitions:
+  Bearer:
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"

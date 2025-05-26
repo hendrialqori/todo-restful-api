@@ -2,6 +2,7 @@ package helper
 
 import (
 	"fmt"
+	"strings"
 	"time"
 	"todo-restful-api/internal/model/domain"
 
@@ -15,14 +16,11 @@ func CreatToken(user domain.User) (string, error) {
 		token string
 		err   error
 	)
-
 	claims := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"id":       user.Id,
 		"username": user.UserName,
 		"email":    user.Email,
-		"role":     user.Role,
-		"iss":      "todo_restful_api",
-		"sub":      "123456",
+		"role":     user.Role.Name,
 		"exp":      time.Now().Add(time.Hour).Unix(), // Expiration time
 		"iat":      time.Now().Unix(),
 	})
@@ -40,18 +38,35 @@ func VerifyToken(tokenString string) (*jwt.Token, error) {
 	)
 
 	if token, err = jwt.Parse(tokenString, func(t *jwt.Token) (any, error) {
-		// Pastikan algoritma sesuai ekspektasi
 		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", t.Header["alg"])
 		}
 		return secretKey, nil
 	}); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("could not JSON decode header")
 	}
 
 	if !token.Valid {
-		return nil, err
+		return nil, fmt.Errorf("token invalid")
 	}
+
+	return token, nil
+}
+
+func GetToken(authrorizaionHeader string) (string, error) {
+	if len(authrorizaionHeader) == 0 {
+		return "", fmt.Errorf("authorization header needed")
+	}
+
+	var token string
+
+	tokenSlice := strings.Split(authrorizaionHeader, " ")
+
+	if len(tokenSlice) == 0 {
+		return "", fmt.Errorf("token needed")
+	}
+
+	token = tokenSlice[1]
 
 	return token, nil
 }

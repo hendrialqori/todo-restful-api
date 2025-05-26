@@ -5,7 +5,6 @@ import (
 	"todo-restful-api/app"
 	"todo-restful-api/exception"
 	"todo-restful-api/internal/route"
-	"todo-restful-api/middleware"
 
 	_ "github.com/go-sql-driver/mysql"
 
@@ -17,11 +16,14 @@ import (
 	httpSwagger "github.com/swaggo/http-swagger"
 )
 
-//	@title			Todo Restful API
-//	@version		1.0
-//	@description	This is a sample todo api (CRUD).
-//	@host			localhost:3000
-//	@BasePath		/api
+//	@title						Todo Restful API
+//	@version					1.0
+//	@description				This is a sample todo api (CRUD).
+//	@host						localhost:3000
+//	@BasePath					/api
+//	@SecurityDefinitions.apiKey	Bearer
+//	@in							header
+//	@name						Authorization
 
 func main() {
 	var (
@@ -42,7 +44,7 @@ func main() {
 
 	server := http.Server{
 		Addr:    "localhost:3000",
-		Handler: middleware.NewAuthMiddleware(router),
+		Handler: router,
 	}
 
 	server.ListenAndServe()

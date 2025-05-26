@@ -21,8 +21,10 @@ type TodoControllerImpl struct {
 //	@Tags			Todos
 //	@Accept			json
 //	@Produce		json
-//	@Param			body	body	web.TodoCreateRequest	true	"all fields is require"
-//	@Success		200	{object}	web.ApiResponse
+//	@Param			body	body		web.TodoCreateRequest	true	"all fields is require"
+//	@Success		200		{object}	web.ApiResponse[web.TodoResponse]
+//	@Failure		401	{object}	web.UnAuthorizedErrorResponse
+//	@Failure		500	{object}	web.InternalServerErrorResponse
 //	@Router			/todos [post]
 func (controller *TodoControllerImpl) Create(write http.ResponseWriter, request *http.Request, params httprouter.Params) {
 	var todoRequest web.TodoCreateRequest
@@ -31,7 +33,7 @@ func (controller *TodoControllerImpl) Create(write http.ResponseWriter, request 
 	}
 
 	todoResponse := controller.TodoService.Create(todoRequest)
-	apiResponse := web.ApiResponse{
+	apiResponse := web.ApiResponse[web.TodoResponse]{
 		Ok:      true,
 		Code:    http.StatusOK,
 		Message: "success",
@@ -45,19 +47,21 @@ func (controller *TodoControllerImpl) Create(write http.ResponseWriter, request 
 //	@Summary		Delete todo base on id
 //	@Description	Delete existing todo base on id and user id
 //	@Tags			Todos
-//	@Param			todo_id		path	int	true	"todo id"
-//	@Param			user_id		path	int	true	"user id"
+//	@Param			todo_id	path	int	true	"todo id"
+//	@Param			user_id	path	int	true	"user id"
 //	@Accept			json
 //	@Produce		json
-//	@Success		200	{object}	web.ApiResponse
-//	@Failure		404	{object}	web.NotFoundResponse
+//	@Success		200	{object}	web.ApiResponse[web.TodoResponse]
+//	@Failure		404	{object}	web.NotFoundErrorResponse
+//	@Failure		401	{object}	web.UnAuthorizedErrorResponse
+//	@Failure		500	{object}	web.InternalServerErrorResponse
 //	@Router			/todos/{todo_id}/users/{user_id} [delete]
 func (controller *TodoControllerImpl) Delete(write http.ResponseWriter, request *http.Request, params httprouter.Params) {
 	todoId := helper.ParamInt(params, "todoId")
 	userId := helper.ParamInt(params, "userId")
 	controller.TodoService.Delete(todoId, userId)
 
-	apiResponse := web.ApiResponse{
+	apiResponse := web.ApiResponse[web.TodoResponse]{
 		Ok:      true,
 		Code:    http.StatusOK,
 		Message: "success",
@@ -73,14 +77,16 @@ func (controller *TodoControllerImpl) Delete(write http.ResponseWriter, request 
 //	@Param			user_id	path	int	true	"user id"
 //	@Accept			json
 //	@Produce		json
-//	@Success		200	{object}	web.ApiResponse
-//	@Failure		404	{object}	web.NotFoundResponse
+//	@Success		200	{object}	web.ApiResponse[[]web.TodoResponse]
+//	@Failure		404	{object}	web.NotFoundErrorResponse
+//	@Failure		401	{object}	web.UnAuthorizedErrorResponse
+//	@Failure		500	{object}	web.InternalServerErrorResponse
 //	@Router			/todos/{user_id} [get]
 func (controller *TodoControllerImpl) FindAll(write http.ResponseWriter, request *http.Request, params httprouter.Params) {
 	userId := helper.ParamInt(params, "userId")
 	todosResponse := controller.TodoService.FindAll(userId)
 
-	apiResponse := web.ApiResponse{
+	apiResponse := web.ApiResponse[[]web.TodoResponse]{
 		Ok:      true,
 		Code:    http.StatusOK,
 		Message: "success",
@@ -94,13 +100,15 @@ func (controller *TodoControllerImpl) FindAll(write http.ResponseWriter, request
 //	@Summary		Update todo base on id
 //	@Description	Update existing todo base on id
 //	@Tags			Todos
-//	@Param			role_id		path	int						true	"todo id"
-//	@Param			user_id		path	int						true	"user id"
+//	@Param			role_id	path	int						true	"todo id"
+//	@Param			user_id	path	int						true	"user id"
 //	@Param			body	body	web.TodoUpdateRequest	true	"ignore or delete id field on request body"
 //	@Accept			json
 //	@Produce		json
-//	@Success		200	{object}	web.ApiResponse
-//	@Failure		404	{object}	web.NotFoundResponse
+//	@Success		200	{object}	web.ApiResponse[web.TodoResponse]
+//	@Failure		404	{object}	web.NotFoundErrorResponse
+//	@Failure		401	{object}	web.UnAuthorizedErrorResponse
+//	@Failure		500	{object}	web.InternalServerErrorResponse
 //	@Router			/todos/{id} [put]
 func (controller *TodoControllerImpl) Update(write http.ResponseWriter, request *http.Request, params httprouter.Params) {
 	var todoRequest web.TodoUpdateRequest
@@ -113,7 +121,7 @@ func (controller *TodoControllerImpl) Update(write http.ResponseWriter, request 
 	todoRequest.Id = todoId
 
 	todoResponse := controller.TodoService.Update(todoRequest)
-	apiResponse := web.ApiResponse{
+	apiResponse := web.ApiResponse[web.TodoResponse]{
 		Ok:      true,
 		Code:    http.StatusCreated,
 		Message: "success",

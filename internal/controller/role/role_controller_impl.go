@@ -21,8 +21,11 @@ type RoleControllerImpl struct {
 //	@Tags			Roles
 //	@Accept			json
 //	@Produce		json
-//	@Param			body	body	web.RoleCreateRequest	true	"all fields is require"
-//	@Success		200	{object}	web.ApiResponse
+//	@Param			body	body		web.RoleCreateRequest	true	"all fields is require"
+//	@Security 		Bearer
+//	@Success		200		{object}	web.ApiResponse[web.RoleResponse]
+//	@Failure		401	{object}	web.UnAuthorizedErrorResponse
+//	@Failure		500	{object}	web.InternalServerErrorResponse
 //	@Router			/roles [post]
 func (controller *RoleControllerImpl) Create(write http.ResponseWriter, request *http.Request, params httprouter.Params) {
 	var roleRequest web.RoleCreateRequest
@@ -31,7 +34,7 @@ func (controller *RoleControllerImpl) Create(write http.ResponseWriter, request 
 	}
 
 	roleResponse := controller.RoleService.Create(roleRequest)
-	apiResponse := web.ApiResponse{
+	apiResponse := web.ApiResponse[web.RoleResponse]{
 		Ok:      true,
 		Code:    http.StatusCreated,
 		Message: "Success",
@@ -49,7 +52,10 @@ func (controller *RoleControllerImpl) Create(write http.ResponseWriter, request 
 //	@Param			body	body	web.RoleUpdateRequest	true	"ignore or delete id field on request body"
 //	@Accept			json
 //	@Produce		json
-//	@Success		200	{object}	web.ApiResponse
+//	@Success		200	{object}	web.ApiResponse[web.RoleResponse]
+//	@Failure		404	{object}	web.NotFoundErrorResponse
+//	@Failure		401	{object}	web.UnAuthorizedErrorResponse
+//	@Failure		500	{object}	web.InternalServerErrorResponse
 //	@Router			/roles/{id} [put]
 func (controller *RoleControllerImpl) Update(write http.ResponseWriter, request *http.Request, params httprouter.Params) {
 	roleId := helper.ParamInt(params, "roleId")
@@ -62,7 +68,7 @@ func (controller *RoleControllerImpl) Update(write http.ResponseWriter, request 
 	roleRequest.Id = roleId
 	roleResponse := controller.RoleService.Update(roleRequest)
 
-	apiResponse := web.ApiResponse{
+	apiResponse := web.ApiResponse[web.RoleResponse]{
 		Ok:      true,
 		Code:    http.StatusCreated,
 		Message: "Success",
@@ -79,14 +85,16 @@ func (controller *RoleControllerImpl) Update(write http.ResponseWriter, request 
 //	@Param			id	path	int	true	"role id"
 //	@Accept			json
 //	@Produce		json
-//	@Success		200	{object}	web.ApiResponse
-//	@Failure		404	{object}	web.NotFoundResponse
+//	@Success		200	{object}	web.ApiResponse[web.RoleResponse]
+//	@Failure		404	{object}	web.NotFoundErrorResponse
+//	@Failure		401	{object}	web.UnAuthorizedErrorResponse
+//	@Failure		500	{object}	web.InternalServerErrorResponse
 //	@Router			/roles/{id} [delete]
 func (controller *RoleControllerImpl) Delete(write http.ResponseWriter, request *http.Request, params httprouter.Params) {
 	roleId := helper.ParamInt(params, "roleId")
 
 	controller.RoleService.Delete(roleId)
-	apiResponse := web.ApiResponse{
+	apiResponse := web.ApiResponse[web.RoleResponse]{
 		Ok:      true,
 		Code:    http.StatusOK,
 		Message: "Sucess",
@@ -102,14 +110,16 @@ func (controller *RoleControllerImpl) Delete(write http.ResponseWriter, request 
 //	@Param			id	path	int	true	"role id"
 //	@Accept			json
 //	@Produce		json
-//	@Success		200	{object}	web.ApiResponse
-//	@Failure		404	{object}	web.NotFoundResponse
+//	@Success		200	{object}	web.ApiResponse[web.RoleResponse]
+//	@Failure		404	{object}	web.NotFoundErrorResponse
+//	@Failure		401	{object}	web.UnAuthorizedErrorResponse
+//	@Failure		500	{object}	web.InternalServerErrorResponse
 //	@Router			/roles/{id} [get]
 func (controller *RoleControllerImpl) FindById(write http.ResponseWriter, request *http.Request, params httprouter.Params) {
 	roleId := helper.ParamInt(params, "roleId")
 
 	roleResponse := controller.RoleService.FindById(roleId)
-	apiResponse := web.ApiResponse{
+	apiResponse := web.ApiResponse[web.RoleResponse]{
 		Ok:      true,
 		Code:    http.StatusOK,
 		Message: "Success",
@@ -125,11 +135,14 @@ func (controller *RoleControllerImpl) FindById(write http.ResponseWriter, reques
 //	@Tags			Roles
 //	@Accept			json
 //	@Produce		json
-//	@Success		200	{object}	web.ApiResponse
+//	@Security 		Bearer
+//	@Success		200	{object}	web.ApiResponse[[]web.RoleResponse]
+//	@Failure		401	{object}	web.UnAuthorizedErrorResponse
+//	@Failure		500	{object}	web.InternalServerErrorResponse
 //	@Router			/roles [get]
 func (controller *RoleControllerImpl) FindAll(write http.ResponseWriter, request *http.Request, params httprouter.Params) {
 	rolesResponse := controller.RoleService.FindAll()
-	apiResponse := web.ApiResponse{
+	apiResponse := web.ApiResponse[[]web.RoleResponse]{
 		Ok:      true,
 		Code:    http.StatusOK,
 		Message: "Sucess",
