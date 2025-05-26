@@ -3,6 +3,7 @@ package repository
 import (
 	"database/sql"
 	"encoding/json"
+	"todo-restful-api/exception"
 	"todo-restful-api/internal/model/domain"
 )
 
@@ -25,7 +26,7 @@ func (repository *AuthRepositoryImpl) Login(user domain.User) domain.User {
 
 	if err := row.Scan(&user.Id, &user.Email, &user.UserName,
 		&roleJSON, &user.CreatedAt, &user.UpdatedAt); err != nil {
-		panic(err)
+		panic(exception.NewNotFoundError("user not found"))
 	}
 	if err := json.Unmarshal([]byte(roleJSON), &user.Role); err != nil {
 		panic(err)
