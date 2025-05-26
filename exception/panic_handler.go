@@ -14,6 +14,7 @@ import (
 type ErrorHandlerFunc func(w http.ResponseWriter, err any) bool
 
 var allErrors = []ErrorHandlerFunc{
+	authError,
 	sqlError,
 	validationError,
 	notFoundError,
@@ -27,30 +28,44 @@ func PanicHandler(w http.ResponseWriter, r *http.Request, err any) {
 			return
 		}
 	}
-
 	// Fallback unknown error
-	writeError(w, http.StatusInternalServerError, "Internal server error", "Something went wrong")
+	writeError(w, http.StatusInternalServerError, "Internal server error", web.InternalServerErrorResponse{
+		Ok:      false,
+		Code:    500,
+		Message: "internal server error",
+	})
 }
 
-func writeError(w http.ResponseWriter, status int, reason string, message string) {
+func writeError(w http.ResponseWriter, status int, reason string, response any) {
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Add("X-Status-Reason", reason)
 	w.WriteHeader(status)
 
-	errResponse := web.ApiResponse{
-		Ok:      false,
-		Code:    status,
-		Message: message,
-	}
-
-	if err := json.NewEncoder(w).Encode(errResponse); err != nil {
+	if err := json.NewEncoder(w).Encode(response); err != nil {
 		panic(err)
+	}
+}
+
+func authError(w http.ResponseWriter, err any) bool {
+	if authError, ok := err.(AuthError); ok {
+		writeError(w, http.StatusUnauthorized, "Unauthorized error", web.UnAuthorizedErrorResponse{
+			Ok:      false,
+			Code:    401,
+			Message: authError.Error,
+		})
+		return true
+	} else {
+		return false
 	}
 }
 
 func sqlError(w http.ResponseWriter, err any) bool {
 	if sqlError, ok := err.(*mysql.MySQLError); ok {
-		writeError(w, http.StatusInternalServerError, "Entity error", sqlError.Message)
+		writeError(w, http.StatusInternalServerError, "Internal server error", web.InternalServerErrorResponse{
+			Ok:      false,
+			Code:    http.StatusInternalServerError,
+			Message: sqlError.Error(),
+		})
 		return true
 	} else {
 		return false
@@ -73,7 +88,11 @@ func validationError(w http.ResponseWriter, err any) bool {
 
 func notFoundError(w http.ResponseWriter, err any) bool {
 	if notFoundError, ok := err.(NotFoundError); ok {
-		writeError(w, http.StatusNotFound, "Not found error", notFoundError.Error)
+		writeError(w, http.StatusNotFound, "Not found error", web.NotFoundErrorResponse{
+			Ok:      false,
+			Code:    404,
+			Message: notFoundError.Error,
+		})
 		return true
 	} else {
 		return false
