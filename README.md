@@ -34,6 +34,8 @@ The project includes automatic database migrations and Swagger-powered API docum
 ## 🚀 Endpoint list API
 You can access **/swagger** at your route to see all existing endpoints.
 
+![Swagger Preview](assets/swagger.png)
+
 ---
 
 
