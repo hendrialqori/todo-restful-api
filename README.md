@@ -44,7 +44,7 @@ Run the command using [Makefile](https://makefiletutorial.com/) for details see 
 |-----------------------|------------|
 | make go               | Run go server |
 | make swag             | Generate swagger docs |
-| make swag-format      | Formater swagger tag |
+| make swag-format      | Formater swagger tag at controller function |
 | make migrate-up       | db migrations up |
 | make migrate-down     | db migrations down |
 | make migrate-force    | force version for migration |
