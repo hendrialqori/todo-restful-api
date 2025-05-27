@@ -6,11 +6,11 @@ The project includes automatic database migrations and Swagger-powered API docum
 
 | Layer          | Technology |
 |----------------|------------|
-| Language       | Go 1.22 +  |
-| Router         | [HttpRouter](https://github.com/julienschmidt/httprouter) |
-| Database       | MySQL 8 +  |
+| Language       | Go 1.24 +  |
+| Router         | [httprouter](https://github.com/julienschmidt/httprouter) |
+| Database       | MySQL |
 | Migrations     | [golang-migrate](https://github.com/golang-migrate/migrate) |
-| Auth           | JWT (HMAC SHA-256) |
+| Auth           | [golang-jwt](https://github.com/golang-jwt/jwt) |
 | Docs           | [swaggo/swag](https://github.com/swaggo/swag) (Swagger UI) |
 
 ---
@@ -34,6 +34,21 @@ The project includes automatic database migrations and Swagger-powered API docum
 You can access **/swagger** at your route to see all existing endpoints.
 
 ![Swagger Preview](assets/swagger.png)
+
+---
+
+## 🚀 Command prompt
+Run the command using [Makefile](https://makefiletutorial.com/) for details see the table below
+
+| Command               | Description |
+|-----------------------|------------|
+| make go               | Run go server |
+| make swag             | Generate swagger docs |
+| make swag-format      | Formater swagger tag |
+| make migrate-up       | db migrations up |
+| make migrate-down     | db migrations down |
+| make migrate-force    | force version for migration |
+| make migrate-down     | drop all migrations |
 
 ---
 
