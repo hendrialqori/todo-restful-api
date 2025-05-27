@@ -18,7 +18,6 @@ The project includes automatic database migrations and Swagger-powered API docum
 ## 📦 Features
 
 - **Role, User, Todo** full CRUD
-- Role-based access control
 - Centralized middleware: JWT auth
 - MySQL migrations (`migrate up/down`)
 - Swagger UI with live “Authorize” form
