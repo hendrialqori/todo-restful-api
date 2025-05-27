@@ -1,6 +1,6 @@
 include .env
 
-MIGRATE = -database "mysql://root:root@tcp(localhost:3306)/todo_restful_api?parseTime=true" -path db/migrations
+MIGRATE = -database "mysql://${APP_DSN}" -path db/migrations
 
 go:
 	go run main.go

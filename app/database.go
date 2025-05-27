@@ -3,12 +3,24 @@ package app
 import (
 	"database/sql"
 	"time"
+
+	"github.com/spf13/viper"
 )
 
 func NewDB() *sql.DB {
+
+	config := viper.New()
+	config.SetConfigFile(".env")
+	config.AddConfigPath(".")
+	config.AutomaticEnv()
+
+	if err := config.ReadInConfig(); err != nil {
+		panic(err)
+	}
+
 	var (
 		driver = "mysql"
-		dsn    = "root:root@tcp(localhost:3306)/todo_restful_api?parseTime=true"
+		dsn    = config.GetString("APP_DSN")
 	)
 
 	db, err := sql.Open(driver, dsn)
