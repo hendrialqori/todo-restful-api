@@ -12,7 +12,7 @@ import (
 func Auth(h httprouter.Handle) httprouter.Handle {
 	return func(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 		autorization := r.Header.Get("Authorization")
-		tokenHeader, err := helper.GetToken(autorization)
+		tokenHeader, err := helper.GetTokenHeader(autorization)
 
 		if err != nil {
 			panic(exception.AuthError{Error: err.Error()})

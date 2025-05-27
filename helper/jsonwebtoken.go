@@ -53,14 +53,14 @@ func VerifyToken(tokenString string) (*jwt.Token, error) {
 	return token, nil
 }
 
-func GetToken(authrorizaionHeader string) (string, error) {
-	if len(authrorizaionHeader) == 0 {
+func GetTokenHeader(authHeader string) (string, error) {
+	if len(authHeader) == 0 {
 		return "", fmt.Errorf("authorization header needed")
 	}
 
 	var token string
 
-	tokenSlice := strings.Split(authrorizaionHeader, " ")
+	tokenSlice := strings.Split(authHeader, " ")
 
 	if len(tokenSlice) == 0 {
 		return "", fmt.Errorf("token needed")
